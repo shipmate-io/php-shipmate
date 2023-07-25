@@ -17,10 +17,8 @@ class JobQueue
     private ShipmateConfig $shipmateConfig;
     private CloudTasksClient $client;
 
-    public function __construct(
-        private string $name,
-        private string $workerUrl,
-    ) {
+    public function __construct()
+    {
         $this->shipmateConfig = new ShipmateConfig;
 
         $this->client = new CloudTasksClient([
@@ -29,10 +27,10 @@ class JobQueue
         ]);
     }
 
-    public function publishJob(Job $job, int $availableAt = null): void
+    public function publishJob(string $queueName, string $queueWorkerUrl, Job $job, int $availableAt = null): void
     {
         $httpRequest = new HttpRequest;
-        $httpRequest->setUrl($this->workerUrl);
+        $httpRequest->setUrl($queueWorkerUrl);
         $httpRequest->setHttpMethod(HttpMethod::POST);
         $httpRequest->setBody(base64_encode(json_encode($job->payload)));
 
@@ -50,7 +48,7 @@ class JobQueue
         $fullyQualifiedQueueName = $this->client->queueName(
             project: $this->shipmateConfig->getEnvironmentId(),
             location: $this->shipmateConfig->getRegionId(),
-            queue: $this->name,
+            queue: $queueName,
         );
 
         $this->client->createTask($fullyQualifiedQueueName, $task);

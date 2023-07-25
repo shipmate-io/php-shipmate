@@ -11,9 +11,8 @@ class MessageQueue
 {
     private PubSubClient $client;
 
-    public function __construct(
-        private string $name
-    ) {
+    public function __construct()
+    {
         $shipmateConfig = new ShipmateConfig;
 
         $this->client = new PubSubClient([
@@ -22,9 +21,9 @@ class MessageQueue
         ]);
     }
 
-    public function publishMessage(Message $message): void
+    public function publishMessage(string $queueName, Message $message): void
     {
-        $this->client->topic($this->name)->publish([
+        $this->client->topic($queueName)->publish([
             'data' => json_encode($message->payload),
             'attributes' => [
                 'type' => $message->type,

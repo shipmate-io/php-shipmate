@@ -18,10 +18,7 @@ You can interact with your Shipmate job queues as follows:
 use Shipmate\Shipmate\JobQueue\JobQueue;
 use Shipmate\Shipmate\JobQueue\Job;
 
-$jobQueue = new JobQueue(
-    name: getenv('SHIPMATE_JOB_QUEUE_NAME'),
-    workerUrl: getenv('SHIPMATE_JOB_QUEUE_WORKER_URL'),
-);
+$jobQueue = new JobQueue;
 
 // publish a job
 
@@ -35,7 +32,11 @@ $job = new Job(
     ],
 )
 
-$jobQueue->publishJob($job);
+$jobQueue->publishJob(
+    queueName: getenv('SHIPMATE_JOB_QUEUE_NAME'),
+    queueWorkerUrl: getenv('SHIPMATE_JOB_QUEUE_WORKER_URL'),
+    job: $job
+);
 
 // handle a job
 
@@ -56,9 +57,7 @@ You can interact with your Shipmate message queues as follows:
 use Shipmate\Shipmate\MessageQueue\MessageQueue;
 use Shipmate\Shipmate\MessageQueue\Message;
 
-$messageQueue = new MessageQueue(
-    name: getenv('SHIPMATE_MESSAGE_QUEUE_NAME'),
-);
+$messageQueue = new MessageQueue;
 
 // publish a message
 
@@ -70,7 +69,10 @@ $message = new Message(
     ],
 )
 
-$messageQueue->publishMessage($message);
+$messageQueue->publishMessage(
+    queueName: getenv('SHIPMATE_MESSAGE_QUEUE_NAME'),
+    message: $message,
+);
 
 // handle a message
 

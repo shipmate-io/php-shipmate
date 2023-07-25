@@ -30,7 +30,7 @@ class StorageBucketFilesystemAdapter extends GoogleCloudStorageAdapter
         );
     }
 
-    public function getStorageClient(): StorageClient
+    public function getGoogleClient(): StorageClient
     {
         return $this->client;
     }
