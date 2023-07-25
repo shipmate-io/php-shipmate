@@ -1,0 +1,46 @@
+{
+    "name": "shipmate-io/php-shipmate",
+    "description": "Interact with Shipmate from your PHP code",
+    "keywords": [
+        "shipmate-io"
+    ],
+    "homepage": "https://github.com/shipmate-io/php-shipmate",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Shipmate",
+            "email": "info@shipmate.io",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "google/cloud-pubsub": "^1.39",
+        "google/cloud-tasks": "^1.11",
+        "league/flysystem-google-cloud-storage": "^3.3",
+        "phpseclib/phpseclib": "^2.0",
+        "spatie/url": "^2.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Shipmate\\Shipmate\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Shipmate\\Shipmate\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
