@@ -11,8 +11,9 @@ class MessageQueue
 {
     private PubSubClient $client;
 
-    public function __construct()
-    {
+    public function __construct(
+        private string $name
+    ) {
         $shipmateConfig = new ShipmateConfig;
 
         $this->client = new PubSubClient([
@@ -21,17 +22,7 @@ class MessageQueue
         ]);
     }
 
-    public function publishMessage(string $queueName, Message $message): void
-    {
-        $this->client->topic($queueName)->publish([
-            'data' => json_encode($message->payload),
-            'attributes' => [
-                'type' => $message->type,
-            ],
-        ]);
-    }
-
-    public function parseMessage(string $requestPayload): Message
+    public static function parseMessage(string $requestPayload): Message
     {
         try {
             $message = json_decode($requestPayload, true);
@@ -44,6 +35,16 @@ class MessageQueue
         } catch (Exception) {
             throw new UnableToParseMessage;
         }
+    }
+
+    public function publishMessage(Message $message): void
+    {
+        $this->client->topic($this->name)->publish([
+            'data' => json_encode($message->payload),
+            'attributes' => [
+                'type' => $message->type,
+            ],
+        ]);
     }
 
     public function getGoogleClient(): PubSubClient

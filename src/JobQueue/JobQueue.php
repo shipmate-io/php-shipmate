@@ -17,8 +17,10 @@ class JobQueue
     private ShipmateConfig $shipmateConfig;
     private CloudTasksClient $client;
 
-    public function __construct()
-    {
+    public function __construct(
+        private string $name,
+        private string $workerUrl,
+    ) {
         $this->shipmateConfig = new ShipmateConfig;
 
         $this->client = new CloudTasksClient([
@@ -27,10 +29,21 @@ class JobQueue
         ]);
     }
 
-    public function publishJob(string $queueName, string $queueWorkerUrl, Job $job, int $availableAt = null): void
+    public static function parseJob(string $requestPayload): Job
+    {
+        try {
+            return new Job(
+                payload: base64_decode(json_decode($requestPayload, true))
+            );
+        } catch (Exception) {
+            throw new UnableToParseJob;
+        }
+    }
+
+    public function publishJob(Job $job, int $availableAt = null): void
     {
         $httpRequest = new HttpRequest;
-        $httpRequest->setUrl($queueWorkerUrl);
+        $httpRequest->setUrl($this->workerUrl);
         $httpRequest->setHttpMethod(HttpMethod::POST);
         $httpRequest->setBody(base64_encode(json_encode($job->payload)));
 
@@ -48,21 +61,10 @@ class JobQueue
         $fullyQualifiedQueueName = $this->client->queueName(
             project: $this->shipmateConfig->getEnvironmentId(),
             location: $this->shipmateConfig->getRegionId(),
-            queue: $queueName,
+            queue: $this->name,
         );
 
         $this->client->createTask($fullyQualifiedQueueName, $task);
-    }
-
-    public function parseJob(string $requestPayload): Job
-    {
-        try {
-            return new Job(
-                payload: base64_decode(json_decode($requestPayload, true))
-            );
-        } catch (Exception) {
-            throw new UnableToParseJob;
-        }
     }
 
     public function getGoogleClient(): CloudTasksClient
