@@ -9,14 +9,14 @@ use Shipmate\Shipmate\ShipmateConfig;
 
 class MessageQueue
 {
-    private PubSubClient $client;
+    protected PubSubClient $googleClient;
 
     public function __construct(
-        private string $name
+        protected string $name
     ) {
         $shipmateConfig = new ShipmateConfig;
 
-        $this->client = new PubSubClient([
+        $this->googleClient = new PubSubClient([
             'projectId' => $shipmateConfig->getEnvironmentId(),
             'keyFile' => $shipmateConfig->getAccessKey(),
         ]);
@@ -39,7 +39,7 @@ class MessageQueue
 
     public function publishMessage(Message $message): void
     {
-        $this->client->topic($this->name)->publish([
+        $this->googleClient->topic($this->name)->publish([
             'data' => json_encode($message->payload),
             'attributes' => [
                 'type' => $message->type,
@@ -49,6 +49,6 @@ class MessageQueue
 
     public function getGoogleClient(): PubSubClient
     {
-        return $this->client;
+        return $this->googleClient;
     }
 }

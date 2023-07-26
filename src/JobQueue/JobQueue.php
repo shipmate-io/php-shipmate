@@ -14,16 +14,17 @@ use Shipmate\Shipmate\ShipmateConfig;
 
 class JobQueue
 {
-    private ShipmateConfig $shipmateConfig;
-    private CloudTasksClient $client;
+    protected ShipmateConfig $shipmateConfig;
+
+    protected CloudTasksClient $googleClient;
 
     public function __construct(
-        private string $name,
-        private string $workerUrl,
+        protected string $name,
+        protected string $workerUrl,
     ) {
         $this->shipmateConfig = new ShipmateConfig;
 
-        $this->client = new CloudTasksClient([
+        $this->googleClient = new CloudTasksClient([
             'projectId' => $this->shipmateConfig->getEnvironmentId(),
             'keyFile' => $this->shipmateConfig->getAccessKey(),
         ]);
@@ -58,17 +59,17 @@ class JobQueue
             $task->setScheduleTime(new Timestamp(['seconds' => $availableAt]));
         }
 
-        $fullyQualifiedQueueName = $this->client->queueName(
+        $fullyQualifiedQueueName = $this->googleClient->queueName(
             project: $this->shipmateConfig->getEnvironmentId(),
             location: $this->shipmateConfig->getRegionId(),
             queue: $this->name,
         );
 
-        $this->client->createTask($fullyQualifiedQueueName, $task);
+        $this->googleClient->createTask($fullyQualifiedQueueName, $task);
     }
 
     public function getGoogleClient(): CloudTasksClient
     {
-        return $this->client;
+        return $this->googleClient;
     }
 }

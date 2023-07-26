@@ -9,7 +9,7 @@ use Shipmate\Shipmate\ShipmateConfig;
 
 class StorageBucketFilesystemAdapter extends GoogleCloudStorageAdapter
 {
-    private StorageClient $client;
+    protected StorageClient $googleClient;
 
     public function __construct(
         string $bucketName,
@@ -17,12 +17,12 @@ class StorageBucketFilesystemAdapter extends GoogleCloudStorageAdapter
     ) {
         $shipmateConfig = new ShipmateConfig;
 
-        $this->client = new StorageClient([
+        $this->googleClient = new StorageClient([
             'keyFile' => $shipmateConfig->getAccessKey(),
             'projectId' => $shipmateConfig->getEnvironmentId(),
         ]);
 
-        $bucket = $this->client->bucket($bucketName);
+        $bucket = $this->googleClient->bucket($bucketName);
 
         parent::__construct(
             bucket: $bucket,
@@ -32,6 +32,6 @@ class StorageBucketFilesystemAdapter extends GoogleCloudStorageAdapter
 
     public function getGoogleClient(): StorageClient
     {
-        return $this->client;
+        return $this->googleClient;
     }
 }
