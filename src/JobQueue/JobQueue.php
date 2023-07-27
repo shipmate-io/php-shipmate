@@ -11,6 +11,7 @@ use Google\Cloud\Tasks\V2\Task;
 use Google\Protobuf\Timestamp;
 use Shipmate\Shipmate\JobQueue\Exceptions\UnableToParseJob;
 use Shipmate\Shipmate\ShipmateConfig;
+use Shipmate\Shipmate\Support\OpenId;
 
 class JobQueue
 {
@@ -39,6 +40,12 @@ class JobQueue
         } catch (Exception) {
             throw new UnableToParseJob;
         }
+    }
+
+    public function authenticateRequest(string $bearerToken): void
+    {
+        $openId = new OpenId;
+        $openId->validateToken($bearerToken, $this->workerUrl);
     }
 
     public function publishJob(Job $job, int $availableAt = null): void
