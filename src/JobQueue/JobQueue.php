@@ -35,7 +35,7 @@ class JobQueue
     {
         try {
             return new Job(
-                payload: base64_decode(json_decode($requestPayload, true))
+                payload: json_decode(base64_decode($requestPayload), true)
             );
         } catch (Exception) {
             throw new UnableToParseJob;
